@@ -9,7 +9,7 @@ const SocketContext = createContext(null);
 
 const SOCKET_URL = process.env.REACT_APP_API_URL
   ? process.env.REACT_APP_API_URL.replace("/api", "")
-  : "http://localhost:5000";
+  : (process.env.NODE_ENV === "production" ? "" : "http://localhost:5000");
 
 export function SocketProvider({ children }) {
   const socketRef = useRef(null);

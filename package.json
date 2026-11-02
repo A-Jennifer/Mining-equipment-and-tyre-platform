@@ -1,0 +1,10 @@
+{
+  "name": "strata-mining-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mining Equipment & Tyre Maintenance Management Platform",
+  "scripts": {
+    "build": "cd backend && npm install && cd ../frontend && npm install && npm run build",
+    "start": "node backend/server.js"
+  }
+}

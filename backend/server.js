@@ -1,4 +1,6 @@
-require("dotenv").config();
+const path = require("path");
+const fs = require("fs");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
@@ -60,13 +62,7 @@ const authLimiter = rateLimit({
 // Swagger Interactive API Documentation
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.get("/", (req, res) => {
-  res.json({
-    message: "Mining Equipment & Tyre Maintenance Management API is running",
-    documentation: "/api/docs"
-  });
-});
-
+// API routes
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/sites", siteRoutes);
@@ -76,10 +72,31 @@ app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/audit", auditRoutes);
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
+// Explicit 404 handler for unmatched API endpoints (prevents serving HTML on missing API calls)
+app.all("/api/*", (req, res) => {
+  res.status(404).json({ message: "API route not found" });
 });
+
+// Single-Domain: Serve React frontend production build if available
+const frontendBuildPath = path.join(__dirname, "../frontend/build");
+if (fs.existsSync(frontendBuildPath)) {
+  app.use(express.static(frontendBuildPath));
+  // All other GET requests serve the React single-page application
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(frontendBuildPath, "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.json({
+      message: "Mining Equipment & Tyre Maintenance Management API is running",
+      documentation: "/api/docs"
+    });
+  });
+  // 404 handler when frontend build is not present
+  app.use((req, res) => {
+    res.status(404).json({ message: "Route not found" });
+  });
+}
 
 // Central error handler
 app.use((err, req, res, next) => {

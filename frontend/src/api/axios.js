@@ -1,7 +1,12 @@
 import axios from "axios";
 
+// Default to relative "/api" in production for single-domain deployment,
+// and localhost in local development.
+const defaultBaseURL =
+  process.env.NODE_ENV === "production" ? "/api" : "http://localhost:5000/api";
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api"
+  baseURL: process.env.REACT_APP_API_URL || defaultBaseURL
 });
 
 // Attach the JWT (if present) to every outgoing request
