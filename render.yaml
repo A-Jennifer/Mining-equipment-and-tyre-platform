@@ -1,0 +1,36 @@
+services:
+  # Backend API with WebSockets (Render Web Service)
+  - type: web
+    name: strata-mining-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false # Set to your MongoDB Atlas connection string in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        sync: false # Set to your frontend deployment URL
+
+  # Frontend React SPA (Render Static Site or Vercel)
+  - type: web
+    name: strata-mining-frontend
+    env: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_API_URL
+        sync: false # Point to backend Render Web Service URL
