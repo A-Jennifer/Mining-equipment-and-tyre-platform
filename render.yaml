@@ -16,6 +16,8 @@ services:
         sync: false # Set to your MongoDB Atlas connection string in Render dashboard
       - key: JWT_SECRET
         generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
       - key: CLIENT_URL
         sync: false # Set to your frontend deployment URL
 

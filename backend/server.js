@@ -37,7 +37,15 @@ app.use(
   })
 );
 
-app.use(cors());
+// CORS: allow frontend origin (set CLIENT_URL in production env, falls back to open for local dev)
+const corsOptions = {
+  origin: process.env.CLIENT_URL
+    ? [process.env.CLIENT_URL, "http://localhost:3000"]
+    : true,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Rate limiter for authentication routes (prevents brute-force credential stuffing)
